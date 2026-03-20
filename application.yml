@@ -1,0 +1,33 @@
+# SmartSure shared configuration for all services
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7002/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,refresh
+  endpoint:
+    health:
+      show-details: always
+
+# JWT Secret Token shared across services
+jwt:
+  secret: SmartSure-Insurance-JWT-Secret-Key-2024-Production-Ready
+  expiration: 86400000
+
+# Common RabbitMQ config
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+rabbitmq:
+  exchange:
+    name: smartsure.exchange

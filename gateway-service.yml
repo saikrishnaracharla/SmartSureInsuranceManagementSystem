@@ -1,0 +1,52 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+
+        - id: policy-service
+          uri: lb://policy-service
+          predicates:
+            - Path=/api/policy/**,/api/policy-types/**,/api/purchased-policies/**,/api/premium/**
+          filters:
+            - StripPrefix=0
+
+        - id: claim-service
+          uri: lb://claim-service
+          predicates:
+            - Path=/api/claims/**,/api/claim-documents/**
+          filters:
+            - StripPrefix=0
+
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/api/admin/**,/api/reports/**,/api/audit/**
+          filters:
+            - StripPrefix=0
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.smartsure.gateway: DEBUG

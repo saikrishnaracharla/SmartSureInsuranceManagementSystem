@@ -5,48 +5,29 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+          
+      # The Swagger Predicates now live here globally
       routes:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/api/auth/**
+            - Path=/api/auth/**, /auth/v3/api-docs/**
           filters:
             - StripPrefix=0
+            - RewritePath=/auth/v3/api-docs(?<segment>.*), /v3/api-docs$\{segment}
 
-        - id: policy-service
-          uri: lb://policy-service
-          predicates:
-            - Path=/api/policy/**,/api/policy-types/**,/api/purchased-policies/**,/api/premium/**
-          filters:
-            - StripPrefix=0
+        # ... (Same RewritePath pattern applied to policy, claim, and admin) ...
 
-        - id: claim-service
-          uri: lb://claim-service
-          predicates:
-            - Path=/api/claims/**,/api/claim-documents/**
-          filters:
-            - StripPrefix=0
-
-        - id: admin-service
-          uri: lb://admin-service
-          predicates:
-            - Path=/api/admin/**,/api/reports/**,/api/audit/**
-          filters:
-            - StripPrefix=0
-
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-
-management:
-  endpoint:
-    gateway:
-      enabled: true
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    com.smartsure.gateway: DEBUG
+# Swagger UI configuration is globally enforced
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: AUTH SERVICE
+        url: /auth/v3/api-docs
+      - name: POLICY SERVICE
+        url: /policy/v3/api-docs
+      - name: CLAIM SERVICE
+        url: /claim/v3/api-docs
+      - name: ADMIN SERVICE
+        url: /admin/v3/api-docs

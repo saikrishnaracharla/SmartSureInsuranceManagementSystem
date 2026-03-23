@@ -5,8 +5,7 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
-          
-      # The Swagger Predicates now live here globally
+
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -14,14 +13,36 @@ spring:
             - Path=/api/auth/**, /auth/v3/api-docs/**
           filters:
             - StripPrefix=0
-            - RewritePath=/auth/v3/api-docs(?<segment>.*), /v3/api-docs$\{segment}
+            - RewritePath=/auth/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
 
-        # ... (Same RewritePath pattern applied to policy, claim, and admin) ...
+        - id: policy-service
+          uri: lb://policy-service
+          predicates:
+            - Path=/policy/**, /policy/v3/api-docs/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/policy/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
 
-# Swagger UI configuration is globally enforced
+        - id: claim-service
+          uri: lb://claim-service
+          predicates:
+            - Path=/claim/**, /claim/v3/api-docs/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/claim/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
+
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/admin/**, /admin/v3/api-docs/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/admin/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    urlsPrimaryName: AUTH SERVICE
     urls:
       - name: AUTH SERVICE
         url: /auth/v3/api-docs
